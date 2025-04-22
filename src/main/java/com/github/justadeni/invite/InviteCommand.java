@@ -1,14 +1,10 @@
 package com.github.justadeni.invite;
 
-import com.mojang.brigadier.Command;
+import com.github.justadeni.invite.autocomplete.TrieManager;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
-import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
-import io.papermc.paper.command.brigadier.argument.resolvers.selector.PlayerSelectorArgumentResolver;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 public class InviteCommand {
 
@@ -17,10 +13,14 @@ public class InviteCommand {
         return Commands.literal(commandName)
             .then(Commands.argument("player", StringArgumentType.word())
                 .suggests((ctx, builder) -> {
-
+                    for (String suggestion : TrieManager.getCompletions(builder.getRemaining())){
+                        builder.suggest(suggestion);
+                    }
+                    return builder.buildFuture();
                 })
                 .executes(ctx -> {
                     String playerName = ctx.getArgument("player", String.class);
+                    return 0;
                 }))
             .build();
 

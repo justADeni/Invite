@@ -1,5 +1,6 @@
 package com.github.justadeni.invite;
 
+import com.github.justadeni.invite.autocomplete.TrieManager;
 import io.papermc.paper.plugin.bootstrap.BootstrapContext;
 import io.papermc.paper.plugin.bootstrap.PluginBootstrap;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
@@ -23,13 +24,13 @@ public final class Invite extends JavaPlugin implements PluginBootstrap {
 
     @Override
     public void onEnable() {
-        // Plugin startup logic
         plugin = this;
+        Thread.ofVirtual().start(TrieManager::downloadAndBuild);
     }
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
+
     }
 
     public static void log(String message) {
