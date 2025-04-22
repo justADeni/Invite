@@ -1,7 +1,9 @@
 package com.github.justadeni.invite;
 
 import com.github.justadeni.invite.autocomplete.TrieManager;
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
@@ -20,7 +22,7 @@ public class InviteCommand {
                 })
                 .executes(ctx -> {
                     String playerName = ctx.getArgument("player", String.class);
-                    return 0;
+                    return Command.SINGLE_SUCCESS;
                 }))
             .build();
 
