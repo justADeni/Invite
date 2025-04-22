@@ -15,6 +15,9 @@ public class TrieManager {
     private static AsciiTree trie;
 
     public static void downloadAndBuild() {
+        try {
+            Invite.getPlugin().getDataFolder().createNewFile();
+        } catch (IOException ignored) {}
         File players = new File(Invite.getPlugin().getDataFolder(), "players.txt");
         try {
             if (players.createNewFile() || players.length() < 500_000_000L) {

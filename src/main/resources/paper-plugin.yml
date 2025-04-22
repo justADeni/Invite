@@ -1,7 +1,7 @@
 name: Invite
 version: '0.1'
 main: com.github.justadeni.invite.Invite
-bootstrapper: com.github.justadeni.invite.Invite
+bootstrapper: com.github.justadeni.invite.InviteBootstrap
 api-version: '1.21'
 authors: [ justADeni ]
 description: Invite your friends to the server
