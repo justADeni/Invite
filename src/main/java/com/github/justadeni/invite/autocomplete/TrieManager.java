@@ -15,26 +15,23 @@ public class TrieManager {
     private static AsciiTree trie;
 
     public static void downloadAndBuild() {
-        try {
-            Invite.getPlugin().getDataFolder().createNewFile();
-        } catch (IOException ignored) {}
+        Invite.getPlugin().getDataFolder().mkdir();
         File players = new File(Invite.getPlugin().getDataFolder(), "players.txt");
         try {
             if (players.createNewFile() || players.length() < 500_000_000L) {
                 try (BufferedInputStream in = new BufferedInputStream(new URI("https://media.githubusercontent.com/media/justADeni/Invite/refs/heads/master/players.txt").toURL().openStream());
                      FileOutputStream fileOutputStream = new FileOutputStream(players.getPath())) {
                     byte[] dataBuffer = new byte[8192];
+                    long totalBytesRead = 0;
+                    int lastpc = 0;
                     int bytesRead;
-                    int percent = 0;
-                    int i = 0;
                     while ((bytesRead = in.read(dataBuffer, 0, 8192)) != -1) {
-                        if (i >= 65750){
-                            i = 0;
-                            percent++;
-                            Invite.log("Downloading player names, progress: " + percent + "%");
-                        }
                         fileOutputStream.write(dataBuffer, 0, bytesRead);
-                        i++;
+                        totalBytesRead += bytesRead;
+                        if (totalBytesRead / 5385584 > lastpc) {
+                            lastpc++;
+                            Invite.log("Downloading player names, progress: " + lastpc + "%");
+                        }
                     }
                     Invite.log("Download finished, autocomplete will now be available for Invite plugin.");
                 } catch (IOException | URISyntaxException e) {

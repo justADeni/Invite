@@ -17,7 +17,7 @@ public class AsciiTree {
     private void construct(List<String> strings) {
         Branch[][] newbase = new Branch[123][];
         for (String string: strings) {
-            if (string.isEmpty())
+            if (string.length() < 2)
                 continue;
 
             char c = string.charAt(0);
