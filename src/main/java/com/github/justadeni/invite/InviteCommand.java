@@ -1,11 +1,13 @@
 package com.github.justadeni.invite;
 
 import com.github.justadeni.invite.autocomplete.TreeManager;
+import com.github.justadeni.invite.mojang.CheckName;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
+import org.bukkit.command.CommandSender;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -22,7 +24,11 @@ public class InviteCommand {
                     return builder.build();
                 }))
                 .executes(ctx -> {
-                    String playerName = ctx.getArgument("player", String.class);
+                    Thread.ofVirtual().start(() -> {
+                        String playerName = ctx.getArgument("player", String.class);
+                        CommandSender sender = ctx.getSource().getSender();
+                        sender.sendMessage(CheckName.exists(playerName) ? "exists" : "doesn't exist");
+                    });
                     return Command.SINGLE_SUCCESS;
                 }))
             .build();
