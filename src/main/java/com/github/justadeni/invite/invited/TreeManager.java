@@ -1,6 +1,8 @@
-package com.github.justadeni.invite.autocomplete;
+package com.github.justadeni.invite.invited;
 
 import com.github.justadeni.invite.Invite;
+import com.github.justadeni.invite.config.Config;
+import com.github.justadeni.invite.utils.Msg;
 
 import java.io.*;
 import java.net.URI;
@@ -31,17 +33,17 @@ public class TreeManager {
                         totalBytesRead += bytesRead;
                         if (totalBytesRead / 5385584 > lastpc) {
                             lastpc++;
-                            Invite.log("Downloading player names, progress: " + lastpc + "%");
+                            Msg.log("Downloading player names, progress: " + lastpc + "%");
                         }
                     }
-                    Invite.log("Download finished successfully.");
+                    Msg.log("Download finished successfully.");
                 } catch (IOException | URISyntaxException e) {
-                    Invite.log("Unknown file error occurred when downloading file. Autocomplete won't be available for Invite plugin.");
+                    Msg.log("Unknown file error occurred when downloading file. Autocomplete won't be available for Invite plugin.");
                     return;
                 }
             }
         } catch (IOException e) {
-            Invite.log("Unknown file error occurred when creating file. Autocomplete won't be available for Invite plugin.");
+            Msg.log("Unknown file error occurred when creating file. Autocomplete won't be available for Invite plugin.");
             return;
         }
         List<String> lines = new ArrayList<>(52_000_000); // pre-size to avoid resizing
@@ -51,13 +53,13 @@ public class TreeManager {
                 lines.add(line);
             }
         } catch (IOException e) {
-            Invite.log("Unknown file error occurred when reading file. Autocomplete won't be available for Invite plugin.");
+            Msg.log("Unknown file error occurred when reading file. Autocomplete won't be available for Invite plugin.");
             return;
         }
-        Invite.log("Loading names into memory...");
+        Msg.log("Loading names into memory...");
         tst = new Tst();
         tst.addAll(lines);
-        Invite.log("Names loaded, autocomplete enabled.");
+        Msg.log("Names loaded, autocomplete enabled.");
         isReady = true;
     }
 
@@ -65,7 +67,7 @@ public class TreeManager {
         if (!isReady)
             return Set.of();
 
-        return tst.keysWithPrefix(prefix, 5);
+        return tst.keysWithPrefix(prefix, Config.getInstance().FIRST_N_SUGGESTIONS);
     }
 
 }

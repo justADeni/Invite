@@ -5,3 +5,20 @@ bootstrapper: com.github.justadeni.invite.InviteBootstrap
 api-version: '1.21'
 authors: [ justADeni ]
 description: Invite your friends to the server
+dependencies:
+  server:
+    AdvancedBan:
+      load: BEFORE
+      required: false
+      join-classpath: true
+
+permissions:
+  invite.use:
+    description: "Use of /invite command"
+    default: true
+  invite.reload:
+    description: "Use of /invite reload"
+    default: op
+  invite.bypass:
+    description: "Bypass restrictions on number of invites"
+    default: op

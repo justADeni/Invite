@@ -1,4 +1,4 @@
-package com.github.justadeni.invite.mojang;
+package com.github.justadeni.invite.invited;
 
 import java.net.HttpURLConnection;
 import java.net.URI;

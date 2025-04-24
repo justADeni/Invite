@@ -1,6 +1,8 @@
 package com.github.justadeni.invite;
 
-import com.github.justadeni.invite.autocomplete.TreeManager;
+import com.github.justadeni.invite.db.Database;
+import com.github.justadeni.invite.invited.TreeManager;
+import com.github.justadeni.invite.config.Config;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Invite extends JavaPlugin {
@@ -11,20 +13,15 @@ public final class Invite extends JavaPlugin {
         return plugin;
     }
 
-    
     public void onEnable() {
         plugin = this;
-        Thread.ofVirtual().start(TreeManager::downloadAndBuild);
+        saveDefaultConfig();
+        if (Config.getInstance().OFFLINE_SUGGESTIONS)
+            Thread.ofVirtual().start(TreeManager::downloadAndBuild);
     }
 
-    
     public void onDisable() {
-
-    }
-
-    public static void log(String message) {
-        if (plugin != null)
-            plugin.getLogger().info(message);
+        Database.get().save();
     }
 
 }

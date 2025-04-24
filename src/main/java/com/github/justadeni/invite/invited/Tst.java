@@ -1,4 +1,4 @@
-package com.github.justadeni.invite.autocomplete;
+package com.github.justadeni.invite.invited;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
