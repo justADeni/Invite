@@ -1,5 +1,5 @@
 name: Invite
-version: '0.1'
+version: ${project.version}
 main: com.github.justadeni.invite.Invite
 bootstrapper: com.github.justadeni.invite.InviteBootstrap
 api-version: '1.21'

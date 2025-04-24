@@ -7,12 +7,13 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
-public class TrieManager {
+public class TreeManager {
 
     private static boolean isReady = false;
 
-    private static AsciiTree trie;
+    private static Tst tst;
 
     public static void downloadAndBuild() {
         Invite.getPlugin().getDataFolder().mkdir();
@@ -33,7 +34,7 @@ public class TrieManager {
                             Invite.log("Downloading player names, progress: " + lastpc + "%");
                         }
                     }
-                    Invite.log("Download finished, autocomplete will now be available for Invite plugin.");
+                    Invite.log("Download finished successfully.");
                 } catch (IOException | URISyntaxException e) {
                     Invite.log("Unknown file error occurred when downloading file. Autocomplete won't be available for Invite plugin.");
                     return;
@@ -53,15 +54,18 @@ public class TrieManager {
             Invite.log("Unknown file error occurred when reading file. Autocomplete won't be available for Invite plugin.");
             return;
         }
-        trie = new AsciiTree(lines);
+        Invite.log("Loading names into memory...");
+        tst = new Tst();
+        tst.addAll(lines);
+        Invite.log("Names loaded, autocomplete enabled.");
         isReady = true;
     }
 
-    public static List<String> getCompletions(String prefix) {
+    public static Set<String> getCompletions(String prefix) {
         if (!isReady)
-            return List.of();
+            return Set.of();
 
-        return trie.autocomplete(prefix);
+        return tst.keysWithPrefix(prefix, 5);
     }
 
 }

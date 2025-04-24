@@ -1,6 +1,6 @@
 package com.github.justadeni.invite;
 
-import com.github.justadeni.invite.autocomplete.TrieManager;
+import com.github.justadeni.invite.autocomplete.TreeManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Invite extends JavaPlugin {
@@ -11,13 +11,13 @@ public final class Invite extends JavaPlugin {
         return plugin;
     }
 
-    @Override
+    
     public void onEnable() {
         plugin = this;
-        Thread.ofVirtual().start(TrieManager::downloadAndBuild);
+        Thread.ofVirtual().start(TreeManager::downloadAndBuild);
     }
 
-    @Override
+    
     public void onDisable() {
 
     }

@@ -1,6 +1,6 @@
 package com.github.justadeni.invite;
 
-import com.github.justadeni.invite.autocomplete.TrieManager;
+import com.github.justadeni.invite.autocomplete.TreeManager;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.tree.LiteralCommandNode;
@@ -16,7 +16,7 @@ public class InviteCommand {
         return Commands.literal(commandName)
             .then(Commands.argument("player", StringArgumentType.word())
                 .suggests((ctx, builder) -> CompletableFuture.supplyAsync(() -> {
-                    for (String suggestion : TrieManager.getCompletions(builder.getRemaining())){
+                    for (String suggestion : TreeManager.getCompletions(builder.getRemaining())){
                         builder.suggest(suggestion);
                     }
                     return builder.build();
