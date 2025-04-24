@@ -21,7 +21,7 @@ public final class Invite extends JavaPlugin {
     }
 
     public void onDisable() {
-        Database.get().save();
+        Database.save();
     }
 
 }

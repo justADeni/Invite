@@ -2,7 +2,9 @@ package com.github.justadeni.invite.invited;
 
 import com.github.justadeni.invite.Invite;
 import com.github.justadeni.invite.config.Config;
+import com.github.justadeni.invite.db.BiMap;
 import com.github.justadeni.invite.utils.Msg;
+import com.github.justadeni.invite.utils.Tread;
 
 import java.io.*;
 import java.net.URI;
@@ -16,6 +18,8 @@ public class TreeManager {
     private static boolean isReady = false;
 
     private static Tst tst;
+
+    private static long lastLoaded = System.currentTimeMillis();
 
     public static void downloadAndBuild() {
         Invite.getPlugin().getDataFolder().mkdir();
@@ -46,26 +50,72 @@ public class TreeManager {
             Msg.log("Unknown file error occurred when creating file. Autocomplete won't be available for Invite plugin.");
             return;
         }
-        List<String> lines = new ArrayList<>(52_000_000); // pre-size to avoid resizing
-        try (BufferedReader reader = new BufferedReader(new FileReader(players), 16 * 1024)) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                lines.add(line);
+        final File db = new File(Invite.getPlugin().getDataFolder(), "playerdb");
+        if (!db.exists()) {
+            List<String> lines = new ArrayList<>(52_000_000); // pre-size to avoid resizing
+            try (BufferedReader reader = new BufferedReader(new FileReader(players), 16 * 1024)) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    lines.add(line);
+                }
+            } catch (IOException e) {
+                Msg.log("Unknown file error occurred when reading file. Autocomplete won't be available for Invite plugin.");
+                return;
+            }
+            Msg.log("Loading names into memory...");
+            tst = new Tst();
+            tst.addAll(lines);
+            Msg.log("Names loaded, autocomplete enabled.");
+            save();
+            clear();
+            players.delete();
+        }
+    }
+
+    private static void save() {
+        if (tst == null)
+            return;
+
+        final File db = new File(Invite.getPlugin().getDataFolder(), "playerdb");
+        try {
+            db.createNewFile();
+            try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(db))) {
+                oos.writeObject(tst);
             }
         } catch (IOException e) {
-            Msg.log("Unknown file error occurred when reading file. Autocomplete won't be available for Invite plugin.");
-            return;
+            Msg.log("Something went very wrong when serializing player names.");
+            e.printStackTrace();
         }
-        Msg.log("Loading names into memory...");
-        tst = new Tst();
-        tst.addAll(lines);
-        Msg.log("Names loaded, autocomplete enabled.");
-        isReady = true;
+    }
+
+    private static void clear() {
+        tst = null;
+        isReady = false;
+    }
+
+    private static void load() {
+        final File db = new File(Invite.getPlugin().getDataFolder(), "playerdb");
+        try {
+            try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(db))) {
+                tst = (Tst) ois.readObject();
+            }
+            isReady = true;
+        } catch (IOException | RuntimeException | ClassNotFoundException e) {
+            Msg.log("Something went very wrong when deserializing player names.");
+            e.printStackTrace();
+        }
     }
 
     public static Set<String> getCompletions(String prefix) {
-        if (!isReady)
-            return Set.of();
+        lastLoaded = System.currentTimeMillis();
+        if (!isReady) {
+            load();
+            Thread.ofVirtual().start(() -> {
+                Tread.eep(Config.getInstance().CACHE_SURVIVAL + 100);
+                if (System.currentTimeMillis() - lastLoaded >= Config.getInstance().CACHE_SURVIVAL)
+                    clear();
+            });
+        }
 
         return tst.keysWithPrefix(prefix, Config.getInstance().FIRST_N_SUGGESTIONS);
     }

@@ -42,5 +42,6 @@ public class Config {
     // Optimization settings
     public final boolean OFFLINE_SUGGESTIONS = get("offline-suggestions");
     public final int FIRST_N_SUGGESTIONS = get("first-n-suggestions");
+    public final int CACHE_SURVIVAL = get("cache-survival");
 
 }

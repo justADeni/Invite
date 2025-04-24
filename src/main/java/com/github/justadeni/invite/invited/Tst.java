@@ -1,5 +1,6 @@
 package com.github.justadeni.invite.invited;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
@@ -8,7 +9,7 @@ import java.util.stream.Collectors;
  * @author Marcello La Rocca
  * <a href="https://github.com/mlarocca">github</a>
  */
-public class Tst {
+public class Tst implements Serializable {
 
     private TstNode root;
 
@@ -94,7 +95,7 @@ public class Tst {
         return root == null ? 0 : root.height();
     }
 
-    private class TstNode {
+    private class TstNode implements Serializable {
 
         private Character character;
         private boolean storesKey;
