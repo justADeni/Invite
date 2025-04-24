@@ -5,26 +5,36 @@ import com.github.justadeni.invite.utils.Msg;
 
 import java.io.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class BiMap<K, V> implements Serializable {
     private BiMap() {}
 
-    private final Map<K, Set<V>> forward = new HashMap<>();
+    private final Map<K, Set<V>> map = new HashMap<>();
 
     public void put(K key, V value) {
-        forward.computeIfAbsent(key, k -> new HashSet<>()).add(value);
+        if (map.containsKey(key))
+            map.get(key).add(value);
+        else
+            map.put(key, new HashSet<>(List.of(value)));
     }
 
     public Set<V> getForward(K key) {
-        return forward.getOrDefault(key, Collections.emptySet());
+        return map.getOrDefault(key, Collections.emptySet());
     }
 
     public Set<K> getKeys() {
-        return forward.keySet();
+        return map.keySet();
+    }
+
+    public Set<V> getValues() {
+        return map.values().stream()
+                .flatMap(Set::stream)
+                .collect(Collectors.toSet());
     }
 
     public int countValues(K key) {
-        return forward.getOrDefault(key, Collections.emptySet()).size();
+        return map.getOrDefault(key, Collections.emptySet()).size();
     }
 
     public void save() {

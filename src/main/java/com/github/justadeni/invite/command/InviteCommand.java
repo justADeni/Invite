@@ -11,12 +11,12 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
-import me.leoko.advancedban.manager.PunishmentManager;
-import me.leoko.advancedban.manager.UUIDManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 public class InviteCommand {
@@ -75,20 +75,19 @@ public class InviteCommand {
                             Msg.send(sender, Config.getInstance().INVITE_NONEXISTENT);
                             return Command.SINGLE_SUCCESS;
                         }
-                        String uuid = UUIDManager.get().getUUID(invited);
-                        if (Bukkit.getServer().getOfflinePlayer(uuid).hasPlayedBefore()) {
-                            if (PunishmentManager.get().getBan(uuid) == null) {
-                                Msg.send(sender, Config.getInstance().INVITE_ALREADY);
-                            } else {
-                                Msg.send(sender, Config.getInstance().INVITE_PUNISHED);
-                            }
+                        if (Database.get().getValues().contains(invited)) {
+                            Msg.send(sender, Config.getInstance().INVITE_INVITED);
+                            return Command.SINGLE_SUCCESS;
+                        }
+                        if (Arrays.stream(Bukkit.getOfflinePlayers()).anyMatch(p -> Objects.equals(p.getName(), invited))) {
+                            Msg.send(sender, Config.getInstance().INVITE_PLAYING);
                             return Command.SINGLE_SUCCESS;
                         }
                         invitor.setLastInvited();
                         invitor.decreaseInvitesLeft();
                         Database.get().put(invitor, invited);
                         Bukkit.getWhitelistedPlayers().add(Bukkit.getOfflinePlayer(invited));
-                        Msg.send(sender, Config.getInstance().INVITE_SUCCESS);
+                        Msg.send(sender, Config.getInstance().INVITE_SUCCESS.replace("%player%", invited));
                     } else {
                         Msg.send(sender, Config.getInstance().ONLY_PLAYER);
                     }

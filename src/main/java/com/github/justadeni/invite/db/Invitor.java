@@ -1,5 +1,7 @@
 package com.github.justadeni.invite.db;
 
+import com.github.justadeni.invite.config.Config;
+
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.UUID;
@@ -15,7 +17,7 @@ public class Invitor implements Serializable {
     public Invitor(UUID uuid) {
         this.uuid = uuid;
         this.lastInvited = 0;
-        this.invitesLeft = 3;
+        this.invitesLeft = Config.getInstance().INSTANT_INVITES;
     }
 
     public UUID getUUID() {
