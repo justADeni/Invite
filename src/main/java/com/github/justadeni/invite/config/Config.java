@@ -20,7 +20,7 @@ public class Config {
         instance = null;
     }
 
-    private static <T> T get(String key) {
+    public static <T> T get(String key) {
         return (T) Invite.getPlugin().getConfig().get(key);
     }
 
@@ -43,5 +43,9 @@ public class Config {
     public final boolean OFFLINE_SUGGESTIONS = get("offline-suggestions");
     public final int FIRST_N_SUGGESTIONS = get("first-n-suggestions");
     public final int CACHE_SURVIVAL = get("cache-survival");
+
+    // Sounds
+    public final Sound SOUND_FAILURE = new Sound("sound-failure");
+    public final Sound SOUND_SUCCESS = new Sound("sound-success");
 
 }

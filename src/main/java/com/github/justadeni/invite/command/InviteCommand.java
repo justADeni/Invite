@@ -48,6 +48,7 @@ public class InviteCommand {
                         } else {
                             Msg.send(sender, Config.getInstance().NO_PERMISSION);
                         }
+                        Config.getInstance().SOUND_FAILURE.play(sender);
                         return Command.SINGLE_SUCCESS;
                     }
                     if (ctx.getSource().getExecutor() instanceof Player player) {
@@ -66,6 +67,7 @@ public class InviteCommand {
                                     int minutes = (int) (totalSecs % 3600) / 60;
                                     String timestring = hours + "h " + minutes + "m";
                                     Msg.send(sender, Config.getInstance().INVITE_TIMEOUT.replace("%time%", timestring));
+                                    Config.getInstance().SOUND_FAILURE.play(sender);
                                     return Command.SINGLE_SUCCESS;
                                 }
                             }
@@ -73,14 +75,17 @@ public class InviteCommand {
 
                         if (!CheckName.exists(invited)) {
                             Msg.send(sender, Config.getInstance().INVITE_NONEXISTENT);
+                            Config.getInstance().SOUND_FAILURE.play(sender);
                             return Command.SINGLE_SUCCESS;
                         }
                         if (Database.get().getValues().contains(invited)) {
                             Msg.send(sender, Config.getInstance().INVITE_INVITED);
+                            Config.getInstance().SOUND_FAILURE.play(sender);
                             return Command.SINGLE_SUCCESS;
                         }
                         if (Arrays.stream(Bukkit.getOfflinePlayers()).anyMatch(p -> Objects.equals(p.getName(), invited))) {
                             Msg.send(sender, Config.getInstance().INVITE_PLAYING);
+                            Config.getInstance().SOUND_FAILURE.play(sender);
                             return Command.SINGLE_SUCCESS;
                         }
                         invitor.setLastInvited();
@@ -88,6 +93,7 @@ public class InviteCommand {
                         Database.get().put(invitor, invited);
                         Bukkit.getWhitelistedPlayers().add(Bukkit.getOfflinePlayer(invited));
                         Msg.send(sender, Config.getInstance().INVITE_SUCCESS.replace("%player%", invited));
+                        Config.getInstance().SOUND_SUCCESS.play(sender);
                     } else {
                         Msg.send(sender, Config.getInstance().ONLY_PLAYER);
                     }

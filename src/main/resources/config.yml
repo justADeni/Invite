@@ -19,3 +19,13 @@ offline-suggestions: true
 cache-survival: 10000
 # Saves on computation
 first-n-suggestions: 5
+
+# Sounds for plugin messages
+sound-failure:
+  key: "ENTITY_VILLAGER_NO"
+  volume: 0.5
+  pitch: 1.0
+sound-success:
+  key: "ENTITY_EXPERIENCE_ORB_PICKUP"
+  volume: 0.5
+  pitch: 1.0
