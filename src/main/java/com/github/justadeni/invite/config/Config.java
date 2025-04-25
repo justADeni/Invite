@@ -1,6 +1,7 @@
 package com.github.justadeni.invite.config;
 
 import com.github.justadeni.invite.Invite;
+import org.intellij.lang.annotations.Subst;
 
 public class Config {
 
@@ -20,7 +21,7 @@ public class Config {
         instance = null;
     }
 
-    public static <T> T get(String key) {
+    private static <T> T get(String key) {
         return (T) Invite.getPlugin().getConfig().get(key);
     }
 
@@ -38,11 +39,6 @@ public class Config {
     // Invite Settings
     public final int INSTANT_INVITES = get("instant-invites");
     public final int TIMEOUT = get("timeout");
-
-    // Optimization settings
-    public final boolean OFFLINE_SUGGESTIONS = get("offline-suggestions");
-    public final int FIRST_N_SUGGESTIONS = get("first-n-suggestions");
-    public final int CACHE_SURVIVAL = get("cache-survival");
 
     // Sounds
     public final Sound SOUND_FAILURE = new Sound("sound-failure");

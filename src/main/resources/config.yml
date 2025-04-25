@@ -13,19 +13,13 @@ messages:
 instant-invites: 3
 # How often can players invite other players after first instant-invites, in ms
 timeout: 86400000
-# Current implementation consumes a lot of RAM
-offline-suggestions: true
-# Player name cache survival time, in ms
-cache-survival: 10000
-# Saves on computation
-first-n-suggestions: 5
 
 # Sounds for plugin messages
 sound-failure:
-  key: "ENTITY_VILLAGER_NO"
+  key: "entity.villager.no"
   volume: 0.5
   pitch: 1.0
 sound-success:
-  key: "ENTITY_EXPERIENCE_ORB_PICKUP"
+  key: "entity.experience_orb.pickup"
   volume: 0.5
   pitch: 1.0

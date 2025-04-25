@@ -4,7 +4,6 @@ import com.github.justadeni.invite.config.Config;
 import com.github.justadeni.invite.db.Database;
 import com.github.justadeni.invite.db.Invitor;
 import com.github.justadeni.invite.invited.CheckName;
-import com.github.justadeni.invite.invited.TreeManager;
 import com.github.justadeni.invite.utils.Msg;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -26,13 +25,6 @@ public class InviteCommand {
         return Commands.literal(commandName)
             .then(Commands.argument("player", StringArgumentType.word())
                 .suggests((ctx, builder) -> CompletableFuture.supplyAsync(() -> {
-                    if (ctx.getSource().getExecutor() instanceof Player player) {
-                        if (player.hasPermission("invite.use")) {
-                            for (String suggestion : TreeManager.getCompletions(builder.getRemaining())) {
-                                builder.suggest(suggestion);
-                            }
-                        }
-                    }
                     if (ctx.getSource().getSender().hasPermission("invite.reload")) {
                         builder.suggest("reload");
                     }
