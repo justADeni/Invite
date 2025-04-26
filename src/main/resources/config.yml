@@ -8,6 +8,8 @@ messages:
   invite-success: "§ePlayer %player% will now be able to join the server."
   invite-timeout: "§cYou can invite another player in §e%time%§c."
   only-player: "§cOnly player can invoke this command."
+  uninvite-failure: "§cPlayer %player% isn't invited nor playing on the server."
+  uninvite-success: "§ePlayer %player% will no longer be able to join the server."
 
 # Number of invites one can make after joining the server, without timeout
 instant-invites: 3

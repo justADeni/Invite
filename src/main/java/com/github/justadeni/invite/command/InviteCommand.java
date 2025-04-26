@@ -5,11 +5,13 @@ import com.github.justadeni.invite.db.Database;
 import com.github.justadeni.invite.db.Invitor;
 import com.github.justadeni.invite.invited.CheckName;
 import com.github.justadeni.invite.utils.Msg;
+import com.github.justadeni.invite.utils.InvitorCheck;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
+import net.aniby.simplewhitelist.api.entity.WhitelistHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -25,70 +27,74 @@ public class InviteCommand {
         return Commands.literal(commandName)
             .then(Commands.argument("player", StringArgumentType.word())
                 .suggests((ctx, builder) -> CompletableFuture.supplyAsync(() -> {
-                    if (ctx.getSource().getSender().hasPermission("invite.reload")) {
-                        builder.suggest("reload");
+                    CommandSender sender = ctx.getSource().getSender();
+                    if (sender.hasPermission("invite.use") ) {
+                        if (sender.hasPermission("invite.reload")) {
+                            builder.suggest("reload");
+                        }
                     }
                     return builder.build();
                 }))
                 .executes(ctx -> {
-                    CommandSender sender = ctx.getSource().getSender();
-                    String invited = ctx.getArgument("player", String.class);
-                    if (invited.equals("reload")) {
-                        if (sender.hasPermission("invite.reload")) {
-                            Config.reload();
-                            Msg.send(sender, Config.getInstance().RELOADED);
-                        } else {
+                    Thread.ofVirtual().start(() -> {
+                        WhitelistHandler wh = WhitelistHandler.Api.instance;
+                        CommandSender sender = ctx.getSource().getSender();
+                        if (!sender.hasPermission("invite.use")) {
                             Msg.send(sender, Config.getInstance().NO_PERMISSION);
+                            Config.getInstance().SOUND_FAILURE.play(sender);
+                            return;
                         }
-                        Config.getInstance().SOUND_FAILURE.play(sender);
-                        return Command.SINGLE_SUCCESS;
-                    }
-                    if (ctx.getSource().getExecutor() instanceof Player player) {
-                        Invitor invitor = Database.get().getKeys()
-                                .stream()
-                                .filter(p -> p.getUUID() == player.getUniqueId())
-                                .findFirst()
-                                .orElse(new Invitor(player.getUniqueId()));
+                        String invited = ctx.getArgument("player", String.class);
+                        if (invited.equals("reload")) {
+                            if (sender.hasPermission("invite.reload")) {
+                                Config.reload();
+                                Msg.send(sender, Config.getInstance().RELOADED);
+                            } else {
+                                Msg.send(sender, Config.getInstance().NO_PERMISSION);
+                            }
+                            Config.getInstance().SOUND_FAILURE.play(sender);
+                            return;
+                        }
+                        if (ctx.getSource().getExecutor() instanceof Player player) {
+                            Invitor invitor = Database.get().getKeys()
+                                    .stream()
+                                    .filter(p -> p.getUUID() == player.getUniqueId())
+                                    .findFirst()
+                                    .orElse(new Invitor(player.getUniqueId()));
 
-                        if (!player.hasPermission("invite.bypass")) {
-                            if (invitor.getInvitesLeft() <= 0) {
-                                long timeleft = System.currentTimeMillis() - invitor.getLastInvited();
-                                if (timeleft < Config.getInstance().TIMEOUT) {
-                                    long totalSecs = timeleft / 1000;
-                                    int hours = (int) totalSecs / 3600;
-                                    int minutes = (int) (totalSecs % 3600) / 60;
-                                    String timestring = hours + "h " + minutes + "m";
-                                    Msg.send(sender, Config.getInstance().INVITE_TIMEOUT.replace("%time%", timestring));
+                            if (!player.hasPermission("invite.bypass")) {
+                                if (InvitorCheck.get(invitor) instanceof InvitorCheck.Timeout timeout) {
+                                    Msg.send(sender, Config.getInstance().INVITE_TIMEOUT.replace("%time%", timeout.timeleftstring()));
                                     Config.getInstance().SOUND_FAILURE.play(sender);
-                                    return Command.SINGLE_SUCCESS;
+                                    return;
                                 }
                             }
-                        }
 
-                        if (!CheckName.exists(invited)) {
-                            Msg.send(sender, Config.getInstance().INVITE_NONEXISTENT);
-                            Config.getInstance().SOUND_FAILURE.play(sender);
-                            return Command.SINGLE_SUCCESS;
+                            if (!CheckName.exists(invited)) {
+                                Msg.send(sender, Config.getInstance().INVITE_NONEXISTENT);
+                                Config.getInstance().SOUND_FAILURE.play(sender);
+                                return;
+                            }
+                            if (Arrays.stream(Bukkit.getOfflinePlayers()).anyMatch(p -> Objects.equals(p.getName(), invited))) {
+                                Msg.send(sender, Config.getInstance().INVITE_PLAYING);
+                                Config.getInstance().SOUND_FAILURE.play(sender);
+                                return;
+                            }
+                            if (wh.isWhitelisted(invited)) {
+                                Msg.send(sender, Config.getInstance().INVITE_INVITED);
+                                Config.getInstance().SOUND_FAILURE.play(sender);
+                                return;
+                            }
+                            invitor.setLastInvited();
+                            invitor.decreaseInvitesLeft();
+                            Database.get().put(invitor, invited);
+                            wh.addWhitelist(invited);
+                            Msg.send(sender, Config.getInstance().INVITE_SUCCESS.replace("%player%", invited));
+                            Config.getInstance().SOUND_SUCCESS.play(sender);
+                        } else {
+                            Msg.send(sender, Config.getInstance().ONLY_PLAYER);
                         }
-                        if (Database.get().getValues().contains(invited)) {
-                            Msg.send(sender, Config.getInstance().INVITE_INVITED);
-                            Config.getInstance().SOUND_FAILURE.play(sender);
-                            return Command.SINGLE_SUCCESS;
-                        }
-                        if (Arrays.stream(Bukkit.getOfflinePlayers()).anyMatch(p -> Objects.equals(p.getName(), invited))) {
-                            Msg.send(sender, Config.getInstance().INVITE_PLAYING);
-                            Config.getInstance().SOUND_FAILURE.play(sender);
-                            return Command.SINGLE_SUCCESS;
-                        }
-                        invitor.setLastInvited();
-                        invitor.decreaseInvitesLeft();
-                        Database.get().put(invitor, invited);
-                        Bukkit.getWhitelistedPlayers().add(Bukkit.getOfflinePlayer(invited));
-                        Msg.send(sender, Config.getInstance().INVITE_SUCCESS.replace("%player%", invited));
-                        Config.getInstance().SOUND_SUCCESS.play(sender);
-                    } else {
-                        Msg.send(sender, Config.getInstance().ONLY_PLAYER);
-                    }
+                    });
                     return Command.SINGLE_SUCCESS;
                 }))
             .build();

@@ -1,5 +1,6 @@
 package com.github.justadeni.invite;
 
+import com.github.justadeni.invite.command.UninviteCommand;
 import com.github.justadeni.invite.command.InviteCommand;
 import io.papermc.paper.plugin.bootstrap.BootstrapContext;
 import io.papermc.paper.plugin.bootstrap.PluginBootstrap;
@@ -11,6 +12,7 @@ public class InviteBootstrap implements PluginBootstrap {
     public void bootstrap(BootstrapContext context) {
         context.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> {
             commands.registrar().register(InviteCommand.createCommand("invite"));
+            commands.registrar().register(UninviteCommand.createCommand("uninvite"));
         });
     }
 

@@ -35,6 +35,8 @@ public class Config {
     public final String INVITE_SUCCESS = get("messages.invite-success");
     public final String INVITE_TIMEOUT = get("messages.invite-timeout");
     public final String ONLY_PLAYER = get("messages.only-player");
+    public final String UNINVITE_FAILURE = get("messages.uninvite-failure");
+    public final String UNINVITE_SUCCESS = get("messages.uninvite-success");
 
     // Invite Settings
     public final int INSTANT_INVITES = get("instant-invites");

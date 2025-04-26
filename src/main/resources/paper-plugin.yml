@@ -6,6 +6,13 @@ api-version: '1.21'
 authors: [ justADeni ]
 description: Invite your friends to the server
 
+dependencies:
+  server:
+    simplewhitelist:
+      load: BEFORE
+      required: true
+      join-classpath: true
+
 permissions:
   invite.use:
     description: "Use of /invite command"
@@ -15,4 +22,10 @@ permissions:
     default: op
   invite.bypass:
     description: "Bypass restrictions on number of invites"
+    default: op
+  invite.uninvite.own:
+    description: "Uninvite player you invited"
+    default: true
+  invite.uninvite.all:
+    description: "Uninvite any player"
     default: op
