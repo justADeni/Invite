@@ -1,1 +1,1 @@
-players.txt filter=lfs diff=lfs merge=lfs -text
+players.tar.lz4 filter=lfs diff=lfs merge=lfs -text
