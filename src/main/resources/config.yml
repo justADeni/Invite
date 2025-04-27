@@ -17,10 +17,10 @@ instant-invites: 3
 timeout: 86400000
 # Current implementation consumes a lot of RAM
 offline-suggestions: true
-# Player name cache survival time, in ms
-cache-survival: 10000
+# Player name cache survival time, in seconds
+cache-survival: 10
 # Saves on computation
-first-n-suggestions: 5
+first-n-suggestions: 30
 
 # Sounds for plugin messages
 sound-failure:

@@ -16,13 +16,25 @@ public class Char3 {
         return string.charAt(0) == a && string.charAt(1) == b && string.charAt(2) == c;
     }
 
-    public String join(String string) {
-        int length = string.length();
-        char[] chars = new char[length+3];
+    public String addSuffix(String suffix) {
+        int length = suffix.length();
+        char[] chars = new char[length + 3];
         chars[0] = a;
         chars[1] = b;
         chars[2] = c;
-        System.arraycopy(string.toCharArray(), 0, chars, 3, length);
+        System.arraycopy(suffix.toCharArray(), 0, chars, 3, length);
+        return new String(chars);
+    }
+
+    public String addPrefixAndSuffix(String prefix, String suffix) {
+        int prefixLength = prefix.length();
+        int suffixLength = suffix.length();
+        char[] chars = new char[prefixLength + suffixLength + 3];
+        System.arraycopy(prefix.toCharArray(), 0, chars, 0, prefixLength);
+        System.arraycopy(suffix.toCharArray(), 0, chars, prefixLength + 3, suffixLength);
+        chars[prefixLength] = a;
+        chars[prefixLength + 1] = b;
+        chars[prefixLength + 2] = c;
         return new String(chars);
     }
 

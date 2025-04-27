@@ -4,6 +4,7 @@ import com.github.justadeni.invite.config.Config;
 import com.github.justadeni.invite.db.Database;
 import com.github.justadeni.invite.db.Invitor;
 import com.github.justadeni.invite.invited.CheckName;
+import com.github.justadeni.invite.suggestions.TreeManager;
 import com.github.justadeni.invite.utils.Msg;
 import com.github.justadeni.invite.utils.InvitorCheck;
 import com.mojang.brigadier.Command;
@@ -29,8 +30,11 @@ public class InviteCommand {
                 .suggests((ctx, builder) -> CompletableFuture.supplyAsync(() -> {
                     CommandSender sender = ctx.getSource().getSender();
                     if (sender.hasPermission("invite.use") ) {
-                        if (sender.hasPermission("invite.reload")) {
+                        if (sender.hasPermission("invite.reload") && "reload".startsWith(builder.getRemaining()))
                             builder.suggest("reload");
+
+                        if (builder.getRemaining().length() >= 3) {
+                            TreeManager.getCompletions(builder.getRemaining()).forEach(builder::suggest);
                         }
                     }
                     return builder.build();
@@ -49,10 +53,11 @@ public class InviteCommand {
                             if (sender.hasPermission("invite.reload")) {
                                 Config.reload();
                                 Msg.send(sender, Config.getInstance().RELOADED);
+                                Config.getInstance().SOUND_SUCCESS.play(sender);
                             } else {
                                 Msg.send(sender, Config.getInstance().NO_PERMISSION);
+                                Config.getInstance().SOUND_FAILURE.play(sender);
                             }
-                            Config.getInstance().SOUND_FAILURE.play(sender);
                             return;
                         }
                         if (ctx.getSource().getExecutor() instanceof Player player) {
