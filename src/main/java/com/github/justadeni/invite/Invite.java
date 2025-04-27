@@ -1,6 +1,8 @@
 package com.github.justadeni.invite;
 
+import com.github.justadeni.invite.config.Config;
 import com.github.justadeni.invite.db.Database;
+import com.github.justadeni.invite.suggestions.TreeManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Invite extends JavaPlugin {
@@ -14,6 +16,8 @@ public final class Invite extends JavaPlugin {
     public void onEnable() {
         plugin = this;
         saveDefaultConfig();
+        if (Config.getInstance().OFFLINE_SUGGESTIONS)
+            Thread.ofVirtual().start(TreeManager::downloadAndBuild);
     }
 
     public void onDisable() {

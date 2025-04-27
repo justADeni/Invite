@@ -15,6 +15,12 @@ messages:
 instant-invites: 3
 # How often can players invite other players after first instant-invites, in ms
 timeout: 86400000
+# Current implementation consumes a lot of RAM
+offline-suggestions: true
+# Player name cache survival time, in ms
+cache-survival: 10000
+# Saves on computation
+first-n-suggestions: 5
 
 # Sounds for plugin messages
 sound-failure:

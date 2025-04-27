@@ -38,6 +38,11 @@ public class Config {
     public final String UNINVITE_FAILURE = get("messages.uninvite-failure");
     public final String UNINVITE_SUCCESS = get("messages.uninvite-success");
 
+    // Optimization settings
+    public final boolean OFFLINE_SUGGESTIONS = get("offline-suggestions");
+    public final int FIRST_N_SUGGESTIONS = get("first-n-suggestions");
+    public final int CACHE_SURVIVAL = get("cache-survival");
+
     // Invite Settings
     public final int INSTANT_INVITES = get("instant-invites");
     public final int TIMEOUT = get("timeout");
